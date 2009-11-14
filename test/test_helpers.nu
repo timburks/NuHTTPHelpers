@@ -12,13 +12,13 @@
         (assert_equal "http%3A%2F%2Fprogramming.nu" ("http://programming.nu" urlEncode))
         (assert_equal "http%3A%2F%2Fprogramming.nu%2Fhome%3Fone%3D1%26two%3D2%263%3Dthree" ("http://programming.nu/home?one=1&two=2&3=three" urlEncode))
         (assert_equal "one+two+three%2C+four+five+six" ("one two three, four five six" urlEncode))
-        (assert_equal "caf%E9" ("caf\xe9" urlEncode)))
+        (assert_equal "caf%C3%A9" ("caf\xe9" urlEncode)))
      
      (- testURLDecoding is
         (assert_equal "http://programming.nu" ("http%3A%2F%2Fprogramming.nu" urlDecode))
         (assert_equal "http://programming.nu/home?one=1&two=2&3=three" ("http%3A%2F%2Fprogramming.nu%2Fhome%3Fone%3D1%26two%3D2%263%3Dthree" urlDecode))
         (assert_equal "one two three, four five six" ("one+two+three%2C+four+five+six" urlDecode))
-        (assert_equal "caf\xe9" ("caf%E9" urlDecode)))
+        (assert_equal "caf\xe9" ("caf%C3%A9" urlDecode)))
      
      (- testURLQueryDictionaryEncoding is
         (set d (dict one:1 two:2 zero:"z,e r&o"))

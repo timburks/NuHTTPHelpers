@@ -54,24 +54,19 @@ static char int_to_char[] = "0123456789ABCDEF";
 
 @implementation NSString (NuHTTPHelpers)
 
-#ifdef DARWIN
-#define CHARACTER_FORMAT_STRING @"%C"
-#else
-#define CHARACTER_FORMAT_STRING @"%c"
-#endif
-
 - (NSString *) urlEncode
 {
     NSMutableString *result = [NSMutableString string];
     int i = 0;
-    int max = [self length];
+    const char *source = [self cStringUsingEncoding:NSUTF8StringEncoding];
+    int max = strlen(source);
     while (i < max) {
-        unichar c = [self characterAtIndex:i++];
+        unsigned char c = source[i++];
         if (c == ' ') {
             [result appendString:@"+"];
         }
         else if (iswalpha(c) || iswdigit(c) || (c == '-') || (c == '.') || (c == '_') || (c == '~')) {
-            [result appendFormat:CHARACTER_FORMAT_STRING, c];
+            [result appendFormat:@"%c", c];
         }
         else {
             [result appendString:[NSString stringWithFormat:@"%%%c%c", int_to_char[(c/16)%16], int_to_char[c%16]]];
