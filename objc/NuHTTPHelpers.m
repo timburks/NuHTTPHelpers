@@ -18,6 +18,8 @@ limitations under the License.
 
 #import "NuHTTPHelpers.h"
 
+#import <wctype.h>
+
 #import <openssl/md5.h>
 #import <openssl/sha.h>
 #import <openssl/hmac.h>
@@ -92,8 +94,9 @@ static char int_to_char[] = "0123456789ABCDEF";
                 break;
             case '%':
                 buffer[j++] =
-                    char_to_int([self characterAtIndex:i++])*16
-                    + char_to_int([self characterAtIndex:i++]);
+                    char_to_int([self characterAtIndex:i])*16
+                    + char_to_int([self characterAtIndex:i+1]);
+                i = i + 2;
                 break;
             default:
                 buffer[j++] = c;
@@ -103,6 +106,7 @@ static char int_to_char[] = "0123456789ABCDEF";
     buffer[j] = 0;
     NSString *result = [NSMutableString stringWithCString:buffer encoding:NSUTF8StringEncoding];
     if (!result) result = [NSMutableString stringWithCString:buffer encoding:NSASCIIStringEncoding];
+    return result;
 }
 
 - (NSDictionary *) urlQueryDictionary
@@ -172,7 +176,7 @@ char *md5_crypt(const char *pw, const char *salt);
     NSMutableString *result = [NSMutableString string];
     NSEnumerator *keyEnumerator = [[[self allKeys] sortedArrayUsingSelector:@selector(compare:)] objectEnumerator];
     id key;
-    while (key = [keyEnumerator nextObject]) {
+    while ((key = [keyEnumerator nextObject])) {
         if ([result length] > 0) [result appendString:@"&"];
         [result appendString:[NSString stringWithFormat:@"%@=%@", [key urlEncode], [[[self objectForKey:key] stringValue] urlEncode]]];
     }
@@ -335,11 +339,11 @@ static const char *const digits = "0123456789abcdef";
                     *dst++ = digits[(*src >> 4) & 0x0f];
                     *dst++ = digits[(*src++ & 0x0f)];
                 }
-                result = [[NSString alloc] initWithData:temp encoding:NSUTF8StringEncoding];
+                result = [[[NSString alloc] initWithData:temp encoding:NSUTF8StringEncoding] autorelease];
             }
         }
     }
-    return (result) ? [result autorelease] : result;
+    return result;
 }
 
 - (NSData *) md5
@@ -350,8 +354,8 @@ static const char *const digits = "0123456789abcdef";
 
 - (NSData *) hmac_sha1:(NSData *) key
 {
-    char hash[1024];
-    int hashlen;
+    unsigned char hash[1024];
+    unsigned int hashlen;
     unsigned char *digest = HMAC(EVP_sha1(), [key bytes], [key length], [self bytes], [self length], hash, &hashlen);
     return [NSData dataWithBytes:hash length:hashlen];
 }
