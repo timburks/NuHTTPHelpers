@@ -125,20 +125,20 @@ static char int_to_char[] = "0123456789ABCDEF";
 {
     BIO *b64, *bmem;
 
-    int length = [self length];
-    char *input = strdup([self cStringUsingEncoding:NSASCIIStringEncoding]);
+    // if our string doesn't end with a newline, conversion will fail.
+    int length = [self length] + 1;
+    NSData *data = [[self stringByAppendingString:@"\n"] dataUsingEncoding:NSASCIIStringEncoding];
 
     char *buffer = (char *)malloc(length);
     memset(buffer, 0, length);
 
     b64 = BIO_new(BIO_f_base64());
-    bmem = BIO_new_mem_buf(input, length);
+    bmem = BIO_new_mem_buf([data bytes], length);
     bmem = BIO_push(b64, bmem);
 
     int outputLength = BIO_read(bmem, buffer, length);
     BIO_free_all(bmem);
 
-    free(input);
     return [NSData dataWithBytesNoCopy:buffer length:outputLength];
 }
 
