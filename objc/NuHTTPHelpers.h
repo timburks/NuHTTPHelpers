@@ -27,6 +27,8 @@ limitations under the License.
 - (NSDictionary *) urlQueryDictionary;
 /*! Base64 decode a string */
 - (NSData *) dataUsingBase64Encoding;
+/*! decode a hex representation of binary data. */
+- (NSData *) dataUsingHexEncoding;
 /*! Compute an md5 hash of a string (typically a password) with a specified salt. */
 - (NSString *) md5HashWithSalt:(NSString *) salt;
 @end

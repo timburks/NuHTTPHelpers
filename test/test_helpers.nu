@@ -31,11 +31,15 @@
         (assert_equal (d base64) (((d base64) dataUsingBase64Encoding) base64))
         (assert_equal d  ((d base64) dataUsingBase64Encoding)))
      
+     (- testHex is
+        (assert_equal "1234567890abcdefabcdef" (("1234567890abcdefABCDEF" dataUsingHexEncoding) hex)))
+       
      (- testBase64andHexEncodings is
         (set hex "4894cb9adc0e14a3f33c72d05e26ddfdc8f67cf9f2e111b1bfcb7054d5883e2b")
         (set b64 "SJTLmtwOFKPzPHLQXibd/cj2fPny4RGxv8twVNWIPis=")
-        (assert_equal hex ((b64 dataUsingBase64Encoding) hex)))
-     
+        (assert_equal hex ((b64 dataUsingBase64Encoding) hex))
+        (assert_equal b64 ((hex dataUsingHexEncoding) base64)))
+        
      (- testHashFunctions is
         (set thirtyTwoZeros (NSData dataWithSize:32))
         ;; ok, it's really 64. Two zeros per byte.

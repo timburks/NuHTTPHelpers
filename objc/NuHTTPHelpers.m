@@ -121,6 +121,21 @@ static char int_to_char[] = "0123456789ABCDEF";
     return result;
 }
 
+- (NSData *) dataUsingHexEncoding
+{
+    const char *encoding = [self cStringUsingEncoding:NSASCIIStringEncoding];
+
+    int length = [self length] / 2;
+
+    unsigned char *bytes = (unsigned char *) malloc (length * sizeof(unsigned char));
+    int i;
+    for (i = 0; i < length; i++) {
+        bytes[i] = char_to_int(encoding[2*i])*16 + char_to_int(encoding[2*i+1]);
+    }
+
+    return [NSData dataWithBytesNoCopy:bytes length:length];
+}
+
 - (NSData *) dataUsingBase64Encoding
 {
     BIO *b64, *bmem;
