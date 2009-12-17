@@ -6,9 +6,11 @@
 (load "NuHTTPHelpers")
 
 (class TestHelpers is NuTestCase
+     (- testUnicode is
+        (assert_equal "\u1234" (NSString stringWithUnicodeCharacter:0x1234))
+        (assert_equal "\u0000" (NSString stringWithUnicodeCharacter:0x0000)))
      
      (- testURLEncoding is
-        
         (assert_equal "http%3A%2F%2Fprogramming.nu" ("http://programming.nu" urlEncode))
         (assert_equal "http%3A%2F%2Fprogramming.nu%2Fhome%3Fone%3D1%26two%3D2%263%3Dthree" ("http://programming.nu/home?one=1&two=2&3=three" urlEncode))
         (assert_equal "one+two+three%2C+four+five+six" ("one two three, four five six" urlEncode))
@@ -33,13 +35,13 @@
      
      (- testHex is
         (assert_equal "1234567890abcdefabcdef" (("1234567890abcdefABCDEF" dataUsingHexEncoding) hex)))
-       
+     
      (- testBase64andHexEncodings is
         (set hex "4894cb9adc0e14a3f33c72d05e26ddfdc8f67cf9f2e111b1bfcb7054d5883e2b")
         (set b64 "SJTLmtwOFKPzPHLQXibd/cj2fPny4RGxv8twVNWIPis=")
         (assert_equal hex ((b64 dataUsingBase64Encoding) hex))
         (assert_equal b64 ((hex dataUsingHexEncoding) base64)))
-        
+     
      (- testHashFunctions is
         (set thirtyTwoZeros (NSData dataWithSize:32))
         ;; ok, it's really 64. Two zeros per byte.

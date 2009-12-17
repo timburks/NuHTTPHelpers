@@ -54,6 +54,11 @@ static char int_to_char[] = "0123456789ABCDEF";
 
 @implementation NSString (NuHTTPHelpers)
 
++ (NSString *) stringWithUnicodeCharacter:(int) c 
+{
+    return [[[NSString alloc] initWithCharacters:&c length:1] autorelease];
+}
+
 - (NSString *) urlEncode
 {
     NSMutableString *result = [NSMutableString string];
