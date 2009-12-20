@@ -54,6 +54,11 @@ static char int_to_char[] = "0123456789ABCDEF";
 
 @implementation NSString (NuHTTPHelpers)
 
++ (NSString *) stringWithUnicodeCharacter:(int) c 
+{
+    return [[[NSString alloc] initWithCharacters:&c length:1] autorelease];
+}
+
 - (NSString *) urlEncode
 {
     NSMutableString *result = [NSMutableString string];
@@ -121,24 +126,39 @@ static char int_to_char[] = "0123456789ABCDEF";
     return result;
 }
 
+- (NSData *) dataUsingHexEncoding
+{
+    const char *encoding = [self cStringUsingEncoding:NSASCIIStringEncoding];
+
+    int length = [self length] / 2;
+
+    unsigned char *bytes = (unsigned char *) malloc (length * sizeof(unsigned char));
+    int i;
+    for (i = 0; i < length; i++) {
+        bytes[i] = char_to_int(encoding[2*i])*16 + char_to_int(encoding[2*i+1]);
+    }
+
+    return [NSData dataWithBytesNoCopy:bytes length:length];
+}
+
 - (NSData *) dataUsingBase64Encoding
 {
     BIO *b64, *bmem;
 
-    int length = [self length];
-    char *input = strdup([self cStringUsingEncoding:NSASCIIStringEncoding]);
+    // if our string doesn't end with a newline, conversion will fail.
+    int length = [self length] + 1;
+    NSData *data = [[self stringByAppendingString:@"\n"] dataUsingEncoding:NSASCIIStringEncoding];
 
     char *buffer = (char *)malloc(length);
     memset(buffer, 0, length);
 
     b64 = BIO_new(BIO_f_base64());
-    bmem = BIO_new_mem_buf(input, length);
+    bmem = BIO_new_mem_buf([data bytes], length);
     bmem = BIO_push(b64, bmem);
 
     int outputLength = BIO_read(bmem, buffer, length);
     BIO_free_all(bmem);
 
-    free(input);
     return [NSData dataWithBytesNoCopy:buffer length:outputLength];
 }
 
