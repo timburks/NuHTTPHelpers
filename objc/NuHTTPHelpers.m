@@ -84,7 +84,7 @@ static char int_to_char[] = "0123456789ABCDEF";
 {
     int i = 0;
     int max = [self length];
-    char *buffer = (char *) malloc (max * sizeof(char));
+    char *buffer = (char *) malloc ((max + 1) * sizeof(char));
     int j = 0;
     while (i < max) {
         char c = [self characterAtIndex:i++];
@@ -106,6 +106,7 @@ static char int_to_char[] = "0123456789ABCDEF";
     buffer[j] = 0;
     NSString *result = [NSMutableString stringWithCString:buffer encoding:NSUTF8StringEncoding];
     if (!result) result = [NSMutableString stringWithCString:buffer encoding:NSASCIIStringEncoding];
+    free(buffer);
     return result;
 }
 
