@@ -54,7 +54,7 @@ static char int_to_char[] = "0123456789ABCDEF";
 
 @implementation NSString (NuHTTPHelpers)
 
-+ (NSString *) stringWithUnicodeCharacter:(int) c 
++ (NSString *) stringWithUnicodeCharacter:(int) c
 {
     return [[[NSString alloc] initWithCharacters:&c length:1] autorelease];
 }
@@ -373,6 +373,14 @@ static const char *const digits = "0123456789abcdef";
     unsigned char hash[1024];
     unsigned int hashlen;
     unsigned char *digest = HMAC(EVP_sha1(), [key bytes], [key length], [self bytes], [self length], hash, &hashlen);
+    return [NSData dataWithBytes:hash length:hashlen];
+}
+
+- (NSData *) hmac_sha256:(NSData *) key
+{
+    unsigned char hash[1024];
+    unsigned int hashlen;
+    unsigned char *digest = HMAC(EVP_sha256(), [key bytes], [key length], [self bytes], [self length], hash, &hashlen);
     return [NSData dataWithBytes:hash length:hashlen];
 }
 
