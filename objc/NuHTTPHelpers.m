@@ -56,7 +56,8 @@ static char int_to_char[] = "0123456789ABCDEF";
 
 // Daniel Dickison
 // http://stackoverflow.com/questions/1105169/html-character-decoding-in-objective-c-cocoa-touch
-- (NSString *)stringByDecodingXMLEntities {
+- (NSString *)stringByDecodingXMLEntities
+{
     NSUInteger myLength = [self length];
     NSUInteger ampIndex = [self rangeOfString:@"&" options:NSLiteralSearch].location;
 
@@ -123,7 +124,7 @@ static char int_to_char[] = "0123456789ABCDEF";
     }
     while (![scanner isAtEnd]);
 
-finish:
+    finish:
     return result;
 }
 
@@ -403,6 +404,29 @@ static NSMutableDictionary *parseHeaders(const char *headers)
     }
 
     return dict;
+}
+
+- (NSDictionary *) multipartDictionary
+{
+    // scan for pattern
+    const char *bytes = (const char *) [self bytes];
+    int cursor = 0;
+    int start = 0;
+    int max = [self length];
+    while (cursor < max) {
+        if (bytes[cursor] == 0x0d) {
+            break;
+        }
+        else {
+            cursor++;
+        }
+    }
+    char *pattern = (char *) malloc((cursor+1) * sizeof(char));
+    strncpy(pattern, bytes, cursor);
+    pattern[cursor] = 0x00;
+    NSString *boundary = [[[NSString alloc] initWithCString:pattern encoding:NSUTF8StringEncoding] autorelease];
+    free(pattern);
+    return [self multipartDictionaryWithBoundary:boundary];
 }
 
 + (NSData *) dataWithSize:(int) size
