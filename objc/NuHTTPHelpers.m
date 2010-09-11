@@ -331,14 +331,14 @@ static NSMutableDictionary *parseHeaders(const char *headers)
     const char *bytes = (const char *) [self bytes];
     const char *pattern = [boundary cStringUsingEncoding:NSUTF8StringEncoding];
 
-    //NSLog(@"pattern: %s", pattern);
+    NSLog(@"pattern: %s", pattern);
 
     // scan through bytes, looking for pattern.
     // split on pattern.
     int cursor = 0;
     int start = 0;
     int max = [self length];
-    //NSLog(@"max = %d", max);
+    NSLog(@"max = %d", max);
     while (cursor < max) {
         if (bytes[cursor] == pattern[0]) {
             // try to scan pattern
@@ -383,14 +383,20 @@ static NSMutableDictionary *parseHeaders(const char *headers)
                                                   // skip CR/LF pair
                         int startOfData = cursor2 + 4;
                                                   // skip CR/LF and final two hyphens
-                        int lengthOfData = cursor - startOfData - 4;
+                        int lengthOfData = cursor - startOfData - 2;
 
                         if (([item valueForKey:@"Content-Type"] == nil) && ([item valueForKey:@"filename"] == nil)) {
-                            NSString *string = [[[NSString alloc] initWithBytes:(bytes+startOfData) length:lengthOfData encoding:NSUTF8StringEncoding] autorelease];
+                            NSString *string = [[[NSString alloc]
+                                initWithBytes:(bytes+startOfData)
+                                length:lengthOfData
+                                encoding:NSUTF8StringEncoding]
+                                autorelease];
+                            NSLog(@"saving %@ for %@", string, [item valueForKey:@"name"]);
                             [dict setObject:string forKey:[item valueForKey:@"name"]];
                         }
                         else {
                             NSData *data = [NSData dataWithBytes:(bytes+startOfData) length:lengthOfData];
+                            NSLog(@"saving data of length %d for %@", [data length], [item valueForKey:@"name"]);
                             [item setObject:data forKey:@"data"];
                             [dict setObject:item forKey:[item valueForKey:@"name"]];
                         }
