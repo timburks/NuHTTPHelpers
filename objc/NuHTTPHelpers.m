@@ -395,8 +395,7 @@ static NSMutableDictionary *parseHeaders(const char *headers)
                             [dict setObject:string forKey:[item valueForKey:@"name"]];
                         }
                         else {
-                            NSData *data = [NSData dataWithBytes:(bytes+startOfData) length:lengthOfData];
-                            NSLog(@"saving data of length %d for %@", [data length], [item valueForKey:@"name"]);
+                            NSData *data = [NSData dataWithBytes:(bytes+startOfData) length:lengthOfData];                            NSLog(@"saving data of length %d for %@", [data length], [item valueForKey:@"name"]);
                             [item setObject:data forKey:@"data"];
                             [dict setObject:item forKey:[item valueForKey:@"name"]];
                         }
@@ -508,6 +507,53 @@ static const char *const digits = "0123456789abcdef";
     BIO_free_all(b64);
 
     return [NSString stringWithCString:buff encoding:NSUTF8StringEncoding];
+}
+
+@end
+
+@implementation NSDate (NuHTTPHelpers)
+
+// Get an RFC822-compliant representation of a date.
+- (NSString *) rfc822
+{
+    NSMutableString *result = [[[NSMutableString alloc] init] autorelease];
+    [result appendString:
+    [self descriptionWithCalendarFormat:@"%a, %d %b %Y %H:%M:%S "
+        timeZone:[NSTimeZone localTimeZone] locale:nil]];
+    [result appendString:[[NSTimeZone localTimeZone] abbreviation]];
+    return result;
+}
+
+// Get an RFC822-compliant representation of a date, expressed in GMT.
+- (NSString *) rfc822_GMT
+{
+    NSMutableString *result = [[[NSMutableString alloc] init] autorelease];
+    [result appendString:
+    [self descriptionWithCalendarFormat:@"%a, %d %b %Y %H:%M:%S GMT"
+        timeZone:[NSTimeZone timeZoneWithName:@"GMT"] locale:nil]];
+    return result;
+}
+
+// Get an RFC1123-compliant representation of a date.
+- (NSString *) rfc1123
+{
+    NSMutableString *result = [[[NSMutableString alloc] init] autorelease];
+    [result appendString:
+    [self descriptionWithCalendarFormat:@"%a, %d %b %Y %H:%M:%S "
+        timeZone:[NSTimeZone timeZoneWithName:@"GMT"] locale:nil]];
+    [result appendString:[[NSTimeZone timeZoneWithName:@"GMT"] abbreviation]];
+    return result;
+}
+
+// Get an RFC3339-compliant representation of a date.
+- (NSString *) rfc3339
+{
+    NSMutableString *result = [[[NSMutableString alloc] init] autorelease];
+    [result appendString:
+    [self descriptionWithCalendarFormat:@"%Y-%m-%dT%H:%M:%S%z"
+        timeZone:[NSTimeZone localTimeZone] locale:nil]];
+    [result insertString:":" atIndex:([result length] - 2)];
+    return result;
 }
 
 @end
