@@ -552,7 +552,7 @@ static const char *const digits = "0123456789abcdef";
     [result appendString:
     [self descriptionWithCalendarFormat:@"%Y-%m-%dT%H:%M:%S%z"
         timeZone:[NSTimeZone localTimeZone] locale:nil]];
-    [result insertString:":" atIndex:([result length] - 2)];
+    [result insertString:@":" atIndex:([result length] - 2)];
     return result;
 }
 
