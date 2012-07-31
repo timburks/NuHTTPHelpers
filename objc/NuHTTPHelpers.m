@@ -379,6 +379,7 @@ static NSMutableDictionary *parseHeaders(const char *headers)
 
                         // Process headers.
                         NSMutableDictionary *item = parseHeaders(headers);
+                        free(headers);
 
                                                   // skip CR/LF pair
                         int startOfData = cursor2 + 4;
